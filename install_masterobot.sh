@@ -1,6 +1,6 @@
 #!/bin/bash
-# Installer per MASTEROBOT – Raspberry Pi Zero WH
-# Scarica script Python, installa dipendenze, compila whisper.cpp e llama.cpp, scarica modelli e voci Piper
+# Installer per MASTEROBOT – Raspberry Pi Zero WH (ARMv6)
+# ASR: whisper.cpp v1.5.2 (tiny) | LLM: llama.cpp TinyLlama Q4 | TTS: Piper (IT/EN/ES)
 
 set -e
 cd ~
@@ -24,16 +24,21 @@ mkdir -p ~/piper_models
 # Script Python
 # -------------------
 echo ">>> Scarico masterobot_full.py..."
+# Cambia l'URL se vuoi puntare al tuo repo invece di Pastebin
 wget -O ~/masterobot_full.py https://pastebin.com/raw/GjTVw5LP
 chmod +x ~/masterobot_full.py
 
 # -------------------
-# Whisper.cpp (ASR)
+# whisper.cpp (ASR) - PIN v1.5.2 per ARMv6
 # -------------------
-if [ ! -d ~/whisper.cpp ]; then
-  echo ">>> Clono whisper.cpp..."
-  git clone https://github.com/ggerganov/whisper.cpp ~/whisper.cpp
+if [ -d ~/whisper.cpp ]; then
+  echo ">>> Rimuovo whisper.cpp esistente per evitare conflitti..."
+  rm -rf ~/whisper.cpp
 fi
+echo ">>> Clono whisper.cpp v1.5.2..."
+git clone --branch v1.5.2 https://github.com/ggerganov/whisper.cpp ~/whisper.cpp
+
+echo ">>> Compilo whisper.cpp..."
 cd ~/whisper.cpp
 make -j2
 mkdir -p models
@@ -50,10 +55,11 @@ if [ ! -d ~/llama.cpp ]; then
   git clone https://github.com/ggerganov/llama.cpp ~/llama.cpp
 fi
 cd ~/llama.cpp
+echo ">>> Compilo llama.cpp..."
 make -j2
 mkdir -p models
 if [ ! -f models/TinyLlama-1.1B-Chat-v1.0.Q4_K_M.gguf ]; then
-  echo ">>> Scarico modello TinyLlama..."
+  echo ">>> Scarico modello TinyLlama Q4..."
   wget -O models/TinyLlama-1.1B-Chat-v1.0.Q4_K_M.gguf \
     https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q4_K_M.gguf
 fi
@@ -77,7 +83,7 @@ done
 
 echo "✔ Installazione completata!"
 echo ""
-echo "Puoi avviare il bot con:"
+echo "Avvia il bot con:"
 echo "  python3 ~/masterobot_full.py"
 echo ""
 echo "Per installarlo come servizio systemd utente:"
