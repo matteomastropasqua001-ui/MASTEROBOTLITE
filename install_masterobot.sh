@@ -1,6 +1,6 @@
 #!/bin/bash
 # Installer per MASTEROBOT – Raspberry Pi Zero WH
-# Scarica script Python da Pastebin, installa dipendenze, compila whisper.cpp e llama.cpp, scarica modelli e voci Piper
+# Scarica script Python, installa dipendenze, compila whisper.cpp e llama.cpp, scarica modelli e voci Piper
 
 set -e
 cd ~
@@ -12,7 +12,7 @@ echo ">>> Installo dipendenze base..."
 sudo apt install -y \
   build-essential cmake git wget curl sox jq \
   alsa-utils libsndfile1 \
-  piper espeak-ng libttspico-utils \
+  piper espeak-ng \
   bluetooth network-manager \
   pipewire pipewire-pulse wireplumber libspa-0.2-bluetooth \
   python3 python3-pip python3-venv python3-serial
@@ -76,8 +76,10 @@ for lang in it en es; do
 done
 
 echo "✔ Installazione completata!"
+echo ""
 echo "Puoi avviare il bot con:"
 echo "  python3 ~/masterobot_full.py"
 echo ""
-echo "Per installare come servizio systemd utente:"
+echo "Per installarlo come servizio systemd utente:"
 echo "  python3 ~/masterobot_full.py --install-service"
+echo "  systemctl --user start masterobot"
